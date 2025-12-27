@@ -1,9 +1,10 @@
 import React from 'react'
 import img from '../../assets/finalbackground.png';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
   const [lang, setLang] = useState('English');
-
+  const navvigate = useNavigate();
   const styles = {
     outer: {
       height: '100vh',
@@ -43,6 +44,16 @@ const HomePage = () => {
     }
   }
 
+  const handleSignIn = () =>{
+      navvigate('/login');
+  }
+
+  const handleStart = ()=>{
+    navvigate('/login');
+  }
+
+  
+
   return (
 
     <div style={styles.outer}>
@@ -55,11 +66,11 @@ const HomePage = () => {
           transform: 'perspective(500px) rotateX(5deg)',
         }}>JoViThirai</h1>
         <div style={styles.nav}>
-          <select value={lang}>
+          <select value={lang} onChange={(e)=>{setLang(e.target.value)}}>
             <option style={{ color: 'black' }}>English</option>
             <option style={{ color: 'black' }}>Tamil</option>
           </select>
-          <button style={{ marginTop: '15px', height: '30px', backgroundColor: 'red', padding: '0px 25px', borderRadius: '5px' }}>Sign In</button>
+          <button onClick = {handleSignIn} style={{ marginTop: '15px', height: '30px', backgroundColor: 'red', padding: '0px 25px', borderRadius: '5px' }}>Sign In</button>
         </div>
       </div>
 
@@ -69,15 +80,15 @@ const HomePage = () => {
           <p>Your next favorite story starts here.</p>
         </div>
 
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <p style={{ fontSize: '1rem', marginBottom: '10px' }}>
             Ready to watch? Enter your email to explore unlimited joy.
           </p>            <div style={styles.emailbox}>
-            <div style={styles.inputbox}>
+            {/*<div style={styles.inputbox}>
               <label style={{ fontSize: '0.8rem', color: '#ccc', marginBottom: '2px' }}>Email address</label>
               <input type='text' style={{ border: 'none', outline: 'none', width: '300px' }} />
-            </div>
-            <button style={{ backgroundColor: 'red', padding: '5px 15px', borderRadius: '2px' }}>Get Started {'>'}</button>
+            </div>*/}
+            <button onClick={handleStart} style={{ backgroundColor: 'red', padding: '5px 15px', borderRadius: '2px' }}>Get Started {'>'}</button>
           </div>
         </div>
       </div>

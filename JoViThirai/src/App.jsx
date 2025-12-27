@@ -34,13 +34,14 @@ function App() {
     // ✅ Wrap everything in the Provider
   
       <Routes>
-        <Route path='/search' element={<SearchResult/>}/>
+        
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Log_Page/>} />
         <Route path="/home" element={<Welcome />}>
           <Route path="movies" element={<ProtectedRoute><MoviePage /></ProtectedRoute>} />
           <Route path="contact" element={<Contact />} />
           <Route path="series" element={<Series />} />
+          <Route path='search' element={<SearchResult/>}/>
           <Route path="series/seriesDetails" element={<SeriesDetails />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="movies/movieDetails" element={<MovieDetails />} />

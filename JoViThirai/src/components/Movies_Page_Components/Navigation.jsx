@@ -45,13 +45,13 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (query.trim()) {
-      const stored = JSON.parse(localStorage.getItem("recentsearches")) || [];
+      const stored = JSON.parse(localStorage.getItem("recentSearches")) || [];
       const updated = [query, ...stored.filter((i) => i !== query)].slice(0, 6)
-
+      console.log(updated)
       localStorage.setItem("recentSearches", JSON.stringify(updated));
       setRecentSearches(updated);
 
-      navigate(`/search?q=${encodeURIComponent(query)}`);
+      navigate(`/home/search?q=${encodeURIComponent(query)}`);
 
       setQuery("");
       setShowSearch(false);
@@ -136,7 +136,7 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
                       className="text-light px-3 py-2 hover-bg"
                       style={{ cursor: "pointer", fontSize: "0.9rem" }}
                       onClick={() => {
-                        navigate(`/search?q=${encodeURIComponent(item)}`);
+                        navigate(`/home/search?q=${encodeURIComponent(item)}`);
                         setShowSearch(false);
                       }}
                     >

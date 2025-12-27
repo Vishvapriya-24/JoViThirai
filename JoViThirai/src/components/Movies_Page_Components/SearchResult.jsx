@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation,useNavigate } from "react-router-dom";
 import axios from "axios";
+import style from "../../style/SearchResult.module.css"; // ✅ Import CSS module
 
 const API_KEY = "57a64673396bec00e661410df51019d4"; // your TMDB key
 
@@ -12,7 +13,7 @@ function SearchResult() {
   const [tvShows, setTvShows] = useState([]);
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (!query) return;
 
@@ -20,9 +21,15 @@ function SearchResult() {
       setLoading(true);
       try {
         const [movieRes, tvRes, personRes] = await Promise.all([
-          axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${query}`),
-          axios.get(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${query}`),
-          axios.get(`https://api.themoviedb.org/3/search/person?api_key=${API_KEY}&query=${query}`),
+          axios.get(
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${query}`
+          ),
+          axios.get(
+            `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${query}`
+          ),
+          axios.get(
+            `https://api.themoviedb.org/3/search/person?api_key=${API_KEY}&query=${query}`
+          ),
         ]);
 
         setMovies(movieRes.data.results || []);
@@ -38,55 +45,69 @@ function SearchResult() {
     fetchAll();
   }, [query]);
 
+  // ✅ Only artists with images (no empty box)
+  const filteredArtists = artists.filter((person) => person.profile_path);
+
+  // ✅ Check for "no results" (artists + movies + tv)
+  const noResults =
+    !loading &&
+    movies.length === 0 &&
+    tvShows.length === 0 &&
+    filteredArtists.length === 0;
+
   return (
-    <div className="container mt-4 text-light">
-      <h3 className="mb-4">Search results for: "{query}"</h3>
+    <div className={`${style.searchContainer}`}>
+      <h3 className={`${style.searchHeading} mb-4`}>
+        Search results for: "{query}"
+      </h3>
+
       {loading && <p>Loading...</p>}
 
-      {/* Artists */}
-      {!loading && artists.length > 0 && (
-        <section className="mb-5">
-          <h5 className="text-uppercase fw-bold mb-3 text-warning">Artists</h5>
-          <div className="d-flex flex-wrap gap-4">
-            {artists.slice(0, 8).map((person) => (
+      {/* Artists – show only if at least one artist WITH IMAGE */}
+      {!loading && filteredArtists.length > 0 && (
+        <section className={`${style.sectionWrapper} mb-5`}>
+          <h5 className={`${style.sectionTitle} text-warning`}>Artists</h5>
+          <div className={`${style.artistGrid} d-flex flex-wrap gap-4`}>
+            {filteredArtists.slice(0, 8).map((person) => (
               <div
                 key={person.id}
-                className="text-center"
-                style={{ width: "120px" }}
+                className={`${style.artistCard} text-center`}
               >
                 <img
-                  src={
-                    person.profile_path
-                      ? `https://image.tmdb.org/t/p/w200${person.profile_path}`
-                      : "https://via.placeholder.com/120x120?text=No+Image"
-                  }
+                  src={`https://image.tmdb.org/t/p/w200${person.profile_path}`}
                   alt={person.name}
-                  className="rounded-circle mb-2"
-                  style={{ width: "120px", height: "120px", objectFit: "cover" }}
+                  className={`${style.artistImg} rounded-circle mb-2`}
                 />
-                <p className="small mb-0">{person.name}</p>
+                <p className={`${style.artistName} small mb-0`}>
+                  {person.name}
+                </p>
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {/* Movies */}
+      {/* Movies – this will show even if artist section is empty */}
       {!loading && movies.length > 0 && (
-        <section className="mb-5">
-          <h5 className="text-uppercase fw-bold mb-3 text-warning">Movies</h5>
+        <section className={`${style.sectionWrapper} mb-5`}>
+          <h5 className={`${style.sectionTitle} text-warning`}>Movies</h5>
           <div className="row">
             {movies.slice(0, 8).map((movie) => (
               <div key={movie.id} className="col-6 col-md-3 mb-4">
-                <div className="card bg-dark text-light h-100 border-0">
+                <div
+                  className={`${style.movieCard} card bg-dark text-light h-100 border-0`}
+                >
                   <img
                     src={
                       movie.poster_path
                         ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
                         : "https://via.placeholder.com/300x450?text=No+Image"
                     }
+                    onClick={() => {
+                navigate(`/home/movies/movieDetails`, { state: movie })
+              }}
                     alt={movie.title}
-                    className="card-img-top rounded"
+                    className={`${style.movieImg} card-img-top rounded`}
                   />
                   <div className="card-body p-2">
                     <h6 className="card-title mb-1 text-truncate">
@@ -105,22 +126,27 @@ function SearchResult() {
         </section>
       )}
 
-      {/* TV Shows */}
+      {/* TV Shows – same logic */}
       {!loading && tvShows.length > 0 && (
-        <section className="mb-5">
-          <h5 className="text-uppercase fw-bold mb-3 text-warning">TV Shows</h5>
+        <section className={`${style.sectionWrapper} mb-5`}>
+          <h5 className={`${style.sectionTitle} text-warning`}>TV Shows</h5>
           <div className="row">
             {tvShows.slice(0, 8).map((tv) => (
               <div key={tv.id} className="col-6 col-md-3 mb-4">
-                <div className="card bg-dark text-light h-100 border-0">
+                <div
+                  className={`${style.tvCard} card bg-dark text-light h-100 border-0`}
+                >
                   <img
                     src={
                       tv.poster_path
                         ? `https://image.tmdb.org/t/p/w300${tv.poster_path}`
                         : "https://via.placeholder.com/300x450?text=No+Image"
                     }
+                    onClick={() => {
+                navigate(`/home/movies/movieDetails`, { state: tv })
+              }}
                     alt={tv.name}
-                    className="card-img-top rounded"
+                    className={`${style.tvImg} card-img-top rounded`}
                   />
                   <div className="card-body p-2">
                     <h6 className="card-title mb-1 text-truncate">{tv.name}</h6>
@@ -137,10 +163,8 @@ function SearchResult() {
         </section>
       )}
 
-      {!loading &&
-        movies.length === 0 &&
-        tvShows.length === 0 &&
-        artists.length === 0 && <p>No results found.</p>}
+      {/* No Results – only when artist, movie, tv ALL empty */}
+      {noResults && <p>No search result available.</p>}
     </div>
   );
 }
