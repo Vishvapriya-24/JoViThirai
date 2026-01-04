@@ -13,8 +13,9 @@ const fetchMovieDetails = async (movieId) => {
 function MovieDetails() {
   const { state: movie } = useLocation();
   const [trailerUrl, setTrailerUrl] = useState(null);
+  const [ShowTrailer, setShowTrailer] = useState(false);
 
-  // 🚫 Safety check if no movie data
+  // 🚫 Safety check if no movie data+
   if (!movie)
     return <h2 style={styles.centerText}>Movie not found</h2>;
 
@@ -35,6 +36,10 @@ function MovieDetails() {
   if (!data?.details) return <h2 style={styles.centerText}>No details found</h2>;
 
   const md = data.details;
+  const cast = data.cast;
+  const embedUrl = trailerUrl
+    ? trailerUrl.replace("watch?v=", "embed/")
+    : null;
 
   return (
     <div style={styles.page}>
@@ -66,23 +71,50 @@ function MovieDetails() {
             </button>
 
             {trailerUrl ? (
-              <a
-                href={trailerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
                 style={styles.trailerButton}
+                onClick={() => setShowTrailer(true)}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.3)")
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.3)")
                 }
                 onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.15)")
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.15)")
                 }
               >
                 Watch Trailer
-              </a>
+              </button>
             ) : (
-              <p style={{ color: "#aaa" }}>Trailer not available</p>
+              <p style={{ color: "#aaa" }}>
+                Trailer not available
+              </p>
             )}
+
+            {ShowTrailer && embedUrl && (
+              <div style={styles.trailerOverlay}>
+                <div style={styles.trailerContainer}>
+                  <button
+                    style={styles.closeButton}
+                    onClick={() => setShowTrailer(false)}
+                  >
+                    ✕
+                  </button>
+
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={embedUrl}
+                    title="Series Trailer"
+                    frameBorder="0"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+
+
           </div>
         </div>
 
@@ -95,6 +127,41 @@ function MovieDetails() {
 
       {/* ===== SHADOW TRANSITION ===== */}
       <div style={styles.shadow}></div>
+
+      {/*====== ABOUT ========*/}
+      <div style={styles.about}> 
+        <h2 style={styles.abouttitle}>About</h2>
+        <p style = {styles.overview}>{md.overview}</p>
+      </div>
+
+      {/* ===== CAST SECTION ===== */}
+      <section style={styles.castSection}>
+        <h2 style={styles.sectionTitle}>Cast</h2>
+
+        <div style={styles.castRow}>
+          {cast.map((actor) => (
+            <div key={actor.id} style={styles.castItem}>
+              <img
+                src={
+                  actor.image
+                    ? actor.image
+                    : "https://via.placeholder.com/150?text=Actor"
+                }
+                alt={actor.name}
+                style={styles.castImage}
+                onMouseEnter={(e) =>
+                  Object.assign(e.currentTarget.style, styles.castImageHover)
+                }
+                onMouseLeave={(e) =>
+                  Object.assign(e.currentTarget.style, { transform: "scale(1)" })
+                }
+              />
+
+              <p style={styles.castName}>{actor.name}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <MoviesRow title="Recommendation" category={`movieDetails/${movie.id}/recommendation`} />
     </div>
@@ -149,7 +216,7 @@ const styles = {
     color: "#bbb",
     fontSize: "1rem",
     marginBottom: "10px",
-    marginLeft:"5px",
+    marginLeft: "5px",
   },
 
   language: {
@@ -186,6 +253,41 @@ const styles = {
     cursor: "pointer",
   },
 
+  trailerOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0,0,0,0.8)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
+  },
+
+  trailerContainer: {
+    position: "relative",
+    width: "80%",
+    height: "60%",
+    backgroundColor: "black",
+    borderRadius: "12px",
+    overflow: "hidden",
+  },
+
+  closeButton: {
+    position: "absolute",
+    top: "10px",
+    right: "15px",
+    background: "transparent",
+    color: "white",
+    fontSize: "22px",
+    border: "none",
+    cursor: "pointer",
+    zIndex: 10,
+  },
+
+
   imageContainer: {
     flex: "0 0 72%", // 👈 fixed width: 60%
     position: "relative",
@@ -217,6 +319,55 @@ const styles = {
       "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)",
     marginTop: "-120px",
     position: "relative",
+  },
+
+  overview: {
+    marginLeft : "3%",
+  },
+
+  abouttitle: {
+    marginLeft: "1%",
+  },
+
+  castSection: {
+    padding: "40px 40px 20px",
+  },
+
+  sectionTitle: {
+    fontSize: "1.8rem",
+    marginBottom: "20px",
+  },
+
+  castImageHover: {
+    transform: "scale(1.08)",
+  },
+
+  castRow: {
+    display: "flex",
+    gap: "25px",
+    overflowX: "auto",
+    paddingBottom: "10px",
+  },
+
+  castItem: {
+    minWidth: "120px",
+    textAlign: "center",
+    cursor: "pointer",
+  },
+
+  castImage: {
+    width: "130px",
+    height: "130px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    border: "2px solid white",
+    transition: "transform 0.3s ease",
+  },
+
+  castName: {
+    marginTop: "8px",
+    fontSize: "0.9rem",
+    color: "#ddd",
   },
 
   centerText: { color: "white", textAlign: "center", marginTop: "30vh" },

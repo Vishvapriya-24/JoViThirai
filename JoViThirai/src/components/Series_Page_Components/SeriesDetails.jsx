@@ -1,29 +1,51 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { BiLogoImdb } from "react-icons/bi";
+import SeriesRow from "./Series_Row"; // optional (recommendations)
 
-// ✅ Fetch 1 season of a given series
-const FetchSeriesSeason = async (seriesId, season) => {
+const fetchSeriesDetails = async (seriesId) => {
   const res = await axios.get(
-    `http://localhost:8000/series/${seriesId}/season/${season}`
+    `http://localhost:8000/series/seriesDetails/${seriesId}`
   );
   return res.data;
 };
 
 function SeriesDetails() {
-  const [season, setSeason] = useState(1);
   const { state: series } = useLocation();
+  const [trailerUrl, setTrailerUrl] = useState(null);
+  const [showtrailer,setshowtrailer] = useState(false);
 
-  // ✅ Fetch series details for given season
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["seriesSeason", series.id, season],
-    queryFn: () => FetchSeriesSeason(series.id, season),
+  // 🚫 Safety check
+  if (!series)
+    return <h2 style={styles.centerText}>Series not found</h2>;
+
+  // 🎬 Fetch series details + trailer
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["seriesDetails", series.id],
+    queryFn: () => fetchSeriesDetails(series.id),
+    enabled: !!series,
   });
 
-  if (isLoading) return <p style={styles.centerText}>Loading series...</p>;
+  useEffect(() => {
+    if (data?.trailer) setTrailerUrl(data.trailer);
+  }, [data]);
+
+  if (isLoading) return <h2 style={styles.centerText}>Loading...</h2>;
   if (isError)
-    return <p style={styles.errorText}>Error fetching data: {error.message}</p>;
+    return (
+      <h2 style={styles.errorText}>Failed to load series details</h2>
+    );
+  if (!data?.details)
+    return <h2 style={styles.centerText}>No details found</h2>;
+
+  const sd = data.details;
+  const cast = data.cast;
+
+  const embedUrl = trailerUrl
+    ? trailerUrl.replace("watch?v=", "embed/")
+    : null;
 
   return (
     <div style={styles.page}>
@@ -31,32 +53,20 @@ function SeriesDetails() {
       <section style={styles.hero}>
         {/* --- Left Info Section --- */}
         <div style={styles.info}>
-          <h1 style={styles.title}>{series.name}</h1>
+          <h1 style={styles.title}>{sd.title}</h1>
 
-          <p style={styles.language}>
-            Original Language:{" "}
-            <span style={{ color: "#fff" }}>{series.original_language}</span>
+          <p style={styles.rating}>
+            <BiLogoImdb style={{ color: "yellow", fontSize: "2em" }} />
+            {sd.rating} /10
           </p>
 
-          {/* --- Season Dropdown --- */}
-          <div style={styles.seasonContainer}>
-            <label htmlFor="seasonSelect" style={styles.seasonLabel}>
-              Select Season:
-            </label>
-            <select
-              id="seasonSelect"
-              value={season}
-              onChange={(e) => setSeason(Number(e.target.value))}
-              style={styles.seasonSelect}
-            >
-              {Array.from({ length: series.number_of_seasons || 1 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  Season {i + 1}
-                </option>
-              ))}
-            </select>
-          </div>
+          <p style={styles.streams}>
+            <span style={{ color: "red" }}>2B+</span> Streams
+          </p>
 
+          <p style={styles.language}>
+            Language: {sd.language}
+          </p>
 
           <div style={styles.buttons}>
             <button
@@ -68,8 +78,50 @@ function SeriesDetails() {
                 (e.currentTarget.style.backgroundColor = "#e50914")
               }
             >
-              ▶ Play
+              Play
             </button>
+
+            {trailerUrl ? (
+              <button
+                onClick={()=>setshowtrailer(true)}
+                style={styles.trailerButton}
+                onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.3)")
+                }
+                onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.15)")
+                }
+              >
+                Watch Trailer
+              </button>
+            ) : (
+              <p style={{ color: "#aaa" }}>
+                Trailer not available
+              </p>
+            )}
+
+            {showtrailer && embedUrl && (
+              <div style={styles.trailerOverlay}>
+                <div style={styles.trailerContainer}>
+                  <button 
+                    style={styles.closeButton}
+                    onClick={()=>setshowtrailer(false)}>
+                      ✕
+                  </button>
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={embedUrl}
+                    title="Series Trailer"
+                    frameBorder="0"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -77,8 +129,8 @@ function SeriesDetails() {
         <div style={styles.imageContainer}>
           <div style={styles.fadeOverlay}></div>
           <img
-            src={series.backdrop || series.poster}
-            alt={series.name}
+            src={sd.backdrop}
+            alt={sd.name}
             style={styles.image}
           />
         </div>
@@ -87,25 +139,43 @@ function SeriesDetails() {
       {/* ===== SHADOW TRANSITION ===== */}
       <div style={styles.shadow}></div>
 
-      {/* ===== EPISODES LIST ===== */}
-      <section style={styles.episodesSection}>
-        <h2 style={styles.episodeTitle}>Episodes</h2>
-        <div style={styles.episodeGrid}>
-          {data?.episodes?.map((ep) => (
-            <div key={ep.id} style={styles.episodeCard}>
+      <div style={styles.about}> 
+        <h2 style={styles.abouttitle}>About</h2>
+        <p style = {styles.overview}>{sd.overview}</p>
+      </div>
+
+      {/* ===== CAST SECTION ===== */}
+      <section style={styles.castSection}>
+        <h2 style={styles.sectionTitle}>Cast</h2>
+
+        <div style={styles.castRow}>
+          {cast.map((actor) => (
+            <div key={actor.id} style={styles.castItem}>
               <img
-                src={`https://image.tmdb.org/t/p/w500${ep.still_path}`}
-                alt={ep.name}
-                style={styles.episodeImage}
+                src={
+                  actor.image
+                    ? actor.image
+                    : "https://via.placeholder.com/150?text=Actor"
+                }
+                alt={actor.name}
+                style={styles.castImage}
+                onMouseEnter={(e) =>
+                  Object.assign(e.currentTarget.style, styles.castImageHover)
+                }
+                onMouseLeave={(e) =>
+                  Object.assign(e.currentTarget.style, { transform: "scale(1)" })
+                }
               />
-              <div style={styles.episodeOverlay}>
-                <h4>{ep.episode_number}. {ep.name}</h4>
-                <p>{ep.overview?.slice(0, 100)}...</p>
-              </div>
+
+              <p style={styles.castName}>{actor.name}</p>
             </div>
           ))}
         </div>
       </section>
+
+      <SeriesRow title="Recommendation" category={`seriesDetails/${series.id}/recommendation`}></SeriesRow>
+      {/* Optional Recommendations */}
+      {/* <SeriesRow title="Similar Series" category={`similar/${series.id}`} /> */}
     </div>
   );
 }
@@ -117,7 +187,6 @@ const styles = {
     color: "white",
     minHeight: "100vh",
     overflow: "hidden",
-    fontFamily: "Poppins, sans-serif",
   },
 
   hero: {
@@ -128,8 +197,8 @@ const styles = {
   },
 
   info: {
-    flex: "0 0 30%",
-    padding: "4%",
+    flex: "0 0 28%", // 👈 fixed width: 40%
+    padding: "4% 4%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -138,6 +207,7 @@ const styles = {
     zIndex: 2,
   },
 
+
   title: {
     fontSize: "2.8rem",
     fontWeight: "bold",
@@ -145,21 +215,30 @@ const styles = {
     lineHeight: "1.1",
   },
 
-  language: {
+  rating: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
     color: "#bbb",
+    fontSize: "1.2rem",
     marginBottom: "10px",
   },
 
-  overview: {
-    marginTop: "20px",
-    color: "#ccc",
+  streams: {
+    color: "#bbb",
     fontSize: "1rem",
-    lineHeight: "1.5",
+    marginBottom: "10px",
+    marginLeft: "5px",
+  },
+
+  language: {
+    color: "#bbb",
+    marginLeft: "5px",
   },
 
   buttons: {
     display: "flex",
-    gap: "20px",
+    gap: "25px",
     marginTop: "20px",
   },
 
@@ -174,8 +253,54 @@ const styles = {
     transition: "0.3s",
   },
 
+  trailerButton: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+    color: "white",
+    border: "1px solid white",
+    borderRadius: "25px",
+    padding: "10px 35px",
+    fontSize: "1rem",
+    textDecoration: "none",
+    transition: "0.3s",
+    cursor: "pointer",
+  },
+
+  trailerOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0,0,0,0.8)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
+  },
+
+  trailerContainer: {
+    position: "relative",
+    width: "80%",
+    height: "60%",
+    backgroundColor: "black",
+    borderRadius: "12px",
+    overflow: "hidden",
+  },
+
+  closeButton: {
+    position: "absolute",
+    top: "10px",
+    right: "15px",
+    background: "transparent",
+    color: "white",
+    fontSize: "22px",
+    border: "none",
+    cursor: "pointer",
+    zIndex: 10,
+  },
+
   imageContainer: {
-    flex: "0 0 70%",
+    flex: "0 0 72%", // 👈 fixed width: 60%
     position: "relative",
     height: "100%",
     overflow: "hidden",
@@ -185,7 +310,6 @@ const styles = {
     width: "100%",
     height: "100%",
     filter: "brightness(80%)",
-    objectFit: "cover",
   },
 
   fadeOverlay: {
@@ -208,58 +332,53 @@ const styles = {
     position: "relative",
   },
 
-  seasonContainer: {
-    display: "flex",
-    alignItems: "center",
-    marginTop: "10px",
-    gap: "10px",
+  overview: {
+    marginLeft : "3%",
   },
 
-  seasonLabel: { fontSize: "1rem", color: "#bbb" },
-
-  seasonSelect: {
-    backgroundColor: "#111",
-    color: "white",
-    padding: "5px 10px",
-    border: "1px solid #333",
-    borderRadius: "5px",
+  abouttitle: {
+    marginLeft: "1%",
   },
 
-  episodesSection: {
-    padding: "40px",
+  castSection: {
+    padding: "40px 40px 20px",
   },
 
-  episodeTitle: {
+  sectionTitle: {
     fontSize: "1.8rem",
     marginBottom: "20px",
   },
 
-  episodeGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "20px",
+  castImageHover: {
+    transform: "scale(1.08)",
   },
 
-  episodeCard: {
-    position: "relative",
-    borderRadius: "10px",
-    overflow: "hidden",
-    backgroundColor: "#181818",
+  castRow: {
+    display: "flex",
+    gap: "25px",
+    overflowX: "auto",
+    paddingBottom: "10px",
+  },
+
+  castItem: {
+    minWidth: "120px",
+    textAlign: "center",
+    cursor: "pointer",
+  },
+
+  castImage: {
+    width: "130px",
+    height: "130px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    border: "2px solid white",
     transition: "transform 0.3s ease",
   },
 
-  episodeCardHover: {
-    transform: "scale(1.05)",
-  },
-
-  episodeImage: {
-    width: "100%",
-    height: "160px",
-    objectFit: "cover",
-  },
-
-  episodeOverlay: {
-    padding: "10px",
+  castName: {
+    marginTop: "8px",
+    fontSize: "0.9rem",
+    color: "#ddd",
   },
 
   centerText: { color: "white", textAlign: "center", marginTop: "30vh" },

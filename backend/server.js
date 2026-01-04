@@ -12,9 +12,10 @@ const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
 const { signup, signin } = require('./log_page');
-const { carousel, getNowPlayingMovies, getPopularMovies,getTopRatedMovies, getUpCommingMovies, getMovieTrailer, getRecommendation, getSeries, getSeriesEpisodes } = require('./movies_page');
+const { carousel, getNowPlayingMovies, getPopularMovies,getTopRatedMovies, getUpCommingMovies, getMovieTrailer, getRecommendation } = require('./movies_page');
 const { createProfile, updateProfile, getProfile } = require('./Requests/ProfileRequest');
 const verifyToken = require('./authMiddleware');
+const {getSeries, getSeriesDetails, getSeriesCast, getSeriesRecommendation} = require('./series_page');
 
 
 const app = express();
@@ -44,8 +45,10 @@ app.get('/movies/movieDetails/:movieId', getMovieTrailer);
 app.get('/movies/movieDetails/:movieId/recommendation', getRecommendation);
 
 //series
-app.get('/series/:category', getSeries);
-app.get('/series/:seriesId/season/:seasonId',getSeriesEpisodes);
+//app.get('/series/:category', getSeries);
+app.get("/series/:region", getSeries);
+app.get("/series/seriesDetails/:seriesId",getSeriesDetails);
+app.get("/series/seriesDetails/:seriesId/recommendation",getSeriesRecommendation);
 
 // Profile routes
 app.post('/profile/create', createProfile);   // create new profile

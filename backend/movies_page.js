@@ -19,12 +19,15 @@ const getMovieTrailer = async (req, res) => {
 
   try {
     // Two API calls: one for videos (trailers), one for details
-    const [videoRes, detailsRes] = await Promise.all([
+    const [videoRes, detailsRes, Casting] = await Promise.all([
       axios.get(`${BASE_URL}/movie/${movieId}/videos`, {
         params: { api_key: API_KEY },
       }),
       axios.get(`${BASE_URL}/movie/${movieId}`, {
         params: { api_key: API_KEY, language: "en-US" },
+      }),
+      axios.get(`${BASE_URL}/movie/${movieId}/credits`, {
+        params: { api_key: API_KEY },
       }),
     ]);
 
@@ -52,9 +55,23 @@ const getMovieTrailer = async (req, res) => {
 
     const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
 
+    // ===== Extract casting details =====
+    const cast = Casting.data.cast
+      .slice(0,10)
+      .map((actor) => ({
+        id: actor.id,
+        name: actor.name,
+        character: actor.character,
+        image: actor.profile_path
+          ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+          : null,
+      }));
+    
+    //Final response
     res.json({
       trailer: trailerUrl,
       details,
+      cast,
     });
   } catch (err) {
     console.error(`❌ Error fetching trailer/details for movie ${movieId}:`, err.message);
@@ -101,7 +118,7 @@ const carousel = async (req, res) => {
     const posters = response.data.results.map((movie) => ({
       id: movie.id,
       title: movie.title,
-      overview:movie.overview.split('.')[0],
+      overview: movie.overview.split('.')[0],
       poster: `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`,
     }));
 
@@ -124,9 +141,11 @@ const getNowPlayingMovies = async (req, res) => {
     });
 
     const movies = response.data.results.map((m) => (
-        {  id: m.id,
-          title: m.title,
-          poster: `https://image.tmdb.org/t/p/w342${m.poster_path}`,  }
+      {
+        id: m.id,
+        title: m.title,
+        poster: `https://image.tmdb.org/t/p/w342${m.poster_path}`,
+      }
     ));
 
     res.json(movies);
@@ -192,73 +211,9 @@ const getUpCommingMovies = async (req, res) => {
 
 
 // 🟢 Fetch Korean (K-drama) Series Example
-const getSeries = async (req, res) => {
 
-  const {category} = req.params;
-  try {
-    const response = await axios.get(`${BASE_URL}/discover/tv`, {
-      params: {
-        api_key: API_KEY,
-        with_original_language: category,
-        with_genres: 10749,  // ✅ Correct spelling
-        sort_by: "popularity.asc",
-        page:3,   // optional, but better for relevance
-      },
-    });
 
-    // 🧩 Transform only the needed data
-    const series = response.data.results
-    .filter((s)=>s.poster_path)
-    .map((s) => ({
-      id: s.id,
-      name: s.name,
-      overview: s.overview,
-      poster: `https://image.tmdb.org/t/p/w1280${s.backdrop_path}`,
-      rating: s.vote_average,
-      releaseDate: s.first_air_date,
-      country: s.origin_country,
-      total_season:s.number_of_seasons || null,
-    }));
 
-    res.json(series);
-  } catch (err) {
-    console.error("Error fetching series:", err.message);
-    res.status(500).json({ error: "Failed to fetch series" });
-  }
-};
-
-const getSeriesEpisodes = async (req,res) => {
-  const { seriesId,seasonId } = req.params;
-  try {
-    const response = await axios.get(`${BASE_URL}/tv/${seriesId}/season/${seasonId}`,{
-      params:{api_key:API_KEY}
-    });
-
-    const episodes = response.data.episodes.map((ep) => ({
-      id: ep.id,
-      name: ep.name,
-      overview: ep.overview,
-      episodeNumber: ep.episode_number,
-      airDate: ep.air_date,
-      stillPath:
-    ep.still_path
-      ? `https://image.tmdb.org/t/p/w500${ep.still_path}`
-      : response.data.poster_path
-      ? `https://image.tmdb.org/t/p/w500${response.data.poster_path}`
-      : "https://via.placeholder.com/500x281?text=No+Image",
-    }));
-
-    res.json({
-      seriesId,
-      seasonId,
-      totalEpisodes: episodes.length,
-      episodes,
-    });
-  } catch (err) {
-    console.error("Error fetching season",seasonId,":", err.message);
-    res.status(500).json({ error: "Failed to fetch Season 1 episodes" });
-  }
-}
 
 
 module.exports = {
@@ -269,6 +224,4 @@ module.exports = {
   getUpCommingMovies,
   getMovieTrailer,
   getRecommendation,
-  getSeries,
-  getSeriesEpisodes,
 };
