@@ -171,12 +171,12 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
             className="me-3"
           >
             <NavDropdown.Item as={NavLink} to="/home/profile">Profile</NavDropdown.Item>
-            <NavDropdown.Item
+            {/* <NavDropdown.Item
 
               onClick={handleOpenSettings}
             >
               Settings
-            </NavDropdown.Item>
+            </NavDropdown.Item> */}
             <NavDropdown.Divider />
             <NavDropdown.Item href="#logout">Logout</NavDropdown.Item>
           </NavDropdown>

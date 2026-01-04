@@ -46,7 +46,7 @@ function App() {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="movies/movieDetails" element={<MovieDetails />} />
 
-          <Route path="settings" element={<Settings />}>
+          {/* <Route path="settings" element={<Settings />}>
             <Route index element={<NotificationsSettings />} />
             <Route path="account" element={<AccountsSettings />} />
             <Route path="general" element={<GeneralSettings />} />
@@ -54,7 +54,7 @@ function App() {
             <Route path="calendar" element={<CalendarSettings />} />
             <Route path="people" element={<PeopleSettings />} />
             <Route path="copilot" element={<CopilotSettings />} />
-          </Route>
+          </Route> */}
 
         </Route>
 
