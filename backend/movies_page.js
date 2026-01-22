@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const https = require('https');
+const db = require('./Database');
 const app = express();
 
 const API_KEY = "57a64673396bec00e661410df51019d4";
@@ -211,6 +212,24 @@ const getUpCommingMovies = async (req, res) => {
 
 
 // 🟢 Fetch Korean (K-drama) Series Example
+const getAllFullMovie = async (req, res) => {
+const select_query = "SELECT id, title, video_url, poster_url FROM movies";
+  db.query(select_query, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: "Movie fetch failed" });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "No movies found" });
+    }
+
+    // SUCCESS RESPONSE
+    return res.status(200).json({
+      message: "Movies fetched successfully",
+      movies: result
+    });
+  });
+};
 
 
 
@@ -224,4 +243,5 @@ module.exports = {
   getUpCommingMovies,
   getMovieTrailer,
   getRecommendation,
+  getAllFullMovie
 };

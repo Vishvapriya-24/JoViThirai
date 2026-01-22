@@ -9,7 +9,7 @@ const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
 const { signup, signin } = require('./log_page');
-const { carousel, getNowPlayingMovies, getPopularMovies,getTopRatedMovies, getUpCommingMovies, getMovieTrailer, getRecommendation } = require('./movies_page');
+const { carousel, getNowPlayingMovies, getPopularMovies,getTopRatedMovies, getUpCommingMovies, getMovieTrailer, getRecommendation, getAllFullMovie } = require('./movies_page');
 const { createProfile, updateProfile, getProfile } = require('./Requests/ProfileRequest');
 const verifyToken = require('./authMiddleware');
 const {getSeries, getSeriesDetails, getSeriesCast, getSeriesRecommendation} = require('./series_page');
@@ -40,7 +40,7 @@ app.get('/movies/top_rated', getTopRatedMovies)
 app.get('/movies/upcoming', getUpCommingMovies)
 app.get('/movies/movieDetails/:movieId', getMovieTrailer);
 app.get('/movies/movieDetails/:movieId/recommendation', getRecommendation);
-
+app.get('/movies/fullmovie',getAllFullMovie)
 //series
 //app.get('/series/:category', getSeries);
 app.get("/series/:region", getSeries);
