@@ -1,41 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navigation from "./Navigation";
 import Plans from "./Plans";
-import Settings from './NavigationsPage/SettingsPages/Settings'
 import { Outlet } from "react-router-dom";
 import FloatingNav from "./FloatingNav";
 
 function Welcome() {
   const [showSubscribe, setShowSubscribe] = useState(false);
-  const [showSettings,setShowSettings] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
+  // 🔒 Disable background scroll when modal open
+  useEffect(() => {
+    document.body.style.overflow = showSubscribe ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showSubscribe]);
 
-  const handleOverlayClick = (e) => {
-    if (e.target.classList.contains("overlay")) {
-      setShowSubscribe(false);
-    }
-  };
+  // ⌨️ ESC key closes modal
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") {
+        setShowSubscribe(false);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   const handleSelectPlan = (planName) => {
     console.log("Plan selected:", planName);
-    // ungala logic - subscription request send panna, modal close panna etc.
+    // 🔗 payment / API logic later
     setShowSubscribe(false);
   };
 
   return (
     <div>
-      <div>
-        <Navigation setShowSubscribe={setShowSubscribe}  setShowSettings={setShowSettings}/>
-      </div>
-      <div>
-        <Outlet />
-      </div>
+      {/* 🔹 Top Navigation */}
+      <Navigation
+        setShowSubscribe={setShowSubscribe}
+        setShowSettings={setShowSettings}
+      />
 
+      {/* 🔹 Page Content */}
+      <Outlet />
 
+      {/* 🔥 SUBSCRIBE MODAL */}
       {showSubscribe && (
         <div
-          className="overlay"
-          onClick={handleOverlayClick}
+          onClick={() => setShowSubscribe(false)}
           style={{
             position: "fixed",
             top: 0,
@@ -46,28 +58,30 @@ function Welcome() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 1000,
+            zIndex: 99999, // 🔥 VERY IMPORTANT
           }}
         >
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
               backgroundColor: "#fff",
               borderRadius: "12px",
               padding: "30px",
               minWidth: "320px",
               maxWidth: "90%",
-              boxShadow: "0 5px 20px rgba(0,0,0,0.2)",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
             }}
           >
-            <h2 style={{ textAlign: "center" }}>Choose a Plan</h2>
+            <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+              Choose a Plan
+            </h2>
+
             <Plans onSelectPlan={handleSelectPlan} />
           </div>
         </div>
       )}
-      <FloatingNav />
     </div>
   );
 }
-
 
 export default Welcome;

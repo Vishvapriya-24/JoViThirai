@@ -19,26 +19,31 @@ import {
 } from "./components/Movies_Page_Components/NavigationsPage/SettingsPages/SettingsPages";
 import Carousel from "./components/Movies_Page_Components/Carousel";
 import Movies from "./components/Movies_Page_Components/Movies";
+import Subscribe from "./components/Movies_Page_Components/Subscribe"; // adjust path if needed
+
 import MovieDetails from "./components/Movies_Page_Components/MovieDetails";
 import Series from "./components/Series_Page_Components/Series";
 import SeriesDetails from "./components/Series_Page_Components/SeriesDetails";
 import { MoviePage } from "./components/Movies_Page_Components/MoviePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SearchResult from "./components/Movies_Page_Components/SearchResult";
+import FullMoviePage from "./components/Movies_Page_Components/FullMoviePage";
 
 // ✅ Create context outside of component
 export const MyContext = createContext();
 
 function App() {
+    const [showSubscribe, setShowSubscribe] = useState(false);
+
   return (
     // ✅ Wrap everything in the Provider
-  
       <Routes>
         
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Log_Page/>} />
         <Route path="/home" element={<Welcome />}>
-          <Route path="movies" element={<ProtectedRoute><MoviePage /></ProtectedRoute>} />
+          <Route path="front" element={<MoviePage/ >}/>
+          <Route path="movies" element={<ProtectedRoute><FullMoviePage /></ProtectedRoute>} />
           <Route path="contact" element={<Contact />} />
           <Route path="series" element={<Series />} />
           <Route path='search' element={<SearchResult/>}/>
@@ -59,6 +64,7 @@ function App() {
         </Route>
 
       </Routes>
+      
   );
 
 }

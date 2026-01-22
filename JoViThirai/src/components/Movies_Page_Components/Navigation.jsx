@@ -88,7 +88,7 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
         {/* Large screen Nav Links */}
         <Navbar.Collapse id="main-navbar" className="d-none d-lg-flex">
           <Nav className="me-auto">
-            <Nav.Link as={NavLink} to="/">Home</Nav.Link>
+            <Nav.Link as={NavLink} to="/home/front">Home</Nav.Link>
             <Nav.Link as={NavLink} to="/home/series">Series</Nav.Link>
             <Nav.Link as={NavLink} to="/home/movies">Movies</Nav.Link>
             <Nav.Link as={NavLink} to="/home/contact">Contact</Nav.Link>
@@ -184,7 +184,9 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
           <Button
             variant="warning"
             className="fw-semibold text-dark"
-            onClick={() => setShowSubscribe(true)}
+            
+            onClick={() => {console.log("SUBSCRIBE BUTTON CLICKED");
+              setShowSubscribe(true)}}
           >
             Subscribe
           </Button>
@@ -207,7 +209,7 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Nav className="flex-column">
-              <Nav.Link as={NavLink} to="/" onClick={handleClose}>Home</Nav.Link>
+              <Nav.Link as={NavLink} to="/home/front" onClick={handleClose}>Home</Nav.Link>
               <Nav.Link as={NavLink} to="/home/series" onClick={handleClose}>Series</Nav.Link>
               <Nav.Link as={NavLink} to="/home/movies" onClick={handleClose}>Movies</Nav.Link>
               <Nav.Link as={NavLink} to="/home/contact" onClick={handleClose}>Contact</Nav.Link>

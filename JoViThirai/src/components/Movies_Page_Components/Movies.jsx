@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useRef } from "react";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import MoviesRow from "./MoviesRow";
-import TrailerBox from "./TrailerBox";
 
 
 function Movies() {
