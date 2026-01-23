@@ -12,22 +12,13 @@ const FetchCarouselData = async() =>{
 }
 
 function Carousel() {
-
   const {data,isLoading,isError,error,isFetching}=useQuery({
     queryKey : ["carousel"],
     queryFn : FetchCarouselData,
   })
 
   if (isLoading) return <CarouselSkeleton />;
-  if(isError) {
-    return (
-    <h1>Error while fetching Reload it.{error}</h1>
-    );
-  }
-
-  if(isFetching) {
-    console.log("carousel is fetched correctly");
-  }
+  if(isError) return <h1>Error while fetching Reload it.{error}</h1> ;
 
   const styles = {
     image: {

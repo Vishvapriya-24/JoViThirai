@@ -40,7 +40,6 @@ function Log_Page() {
                 email,
                 password
             }, { withCredentials: true })
-            console.log("LoginResponse:",res.data)
             setMessage(res.data.msg);
             navigate('/home/front');
             if (res.data.token) {

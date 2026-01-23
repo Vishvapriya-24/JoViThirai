@@ -7,19 +7,16 @@ const app = express();
 const API_KEY = "57a64673396bec00e661410df51019d4";
 const BASE_URL = "https://api.themoviedb.org/3";
 
-// ✅ Create HTTPS agent to ignore certificate issues safely
 const agent = new https.Agent({
   keepAlive: true,
-  rejectUnauthorized: false, // ignore SSL verification issues
+  rejectUnauthorized: false, 
 });
 axios.defaults.httpsAgent = agent;
 
-// ✅ Helper – get YouTube trailer (with fallback)
 const getMovieTrailer = async (req, res) => {
   const { movieId } = req.params;
 
   try {
-    // Two API calls: one for videos (trailers), one for details
     const [videoRes, detailsRes, Casting] = await Promise.all([
       axios.get(`${BASE_URL}/movie/${movieId}/videos`, {
         params: { api_key: API_KEY },
@@ -32,7 +29,6 @@ const getMovieTrailer = async (req, res) => {
       }),
     ]);
 
-    // ===== Extract trailer =====
     let trailer = videoRes.data.results.find(
       (v) => v.site === "YouTube" && ["Trailer", "Teaser"].includes(v.type)
     );
@@ -40,7 +36,6 @@ const getMovieTrailer = async (req, res) => {
       trailer = videoRes.data.results.find((v) => v.site === "YouTube");
     }
 
-    // ===== Extract movie details =====
     const movie = detailsRes.data;
 
     const details = {
@@ -56,7 +51,6 @@ const getMovieTrailer = async (req, res) => {
 
     const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
 
-    // ===== Extract casting details =====
     const cast = Casting.data.cast
       .slice(0,10)
       .map((actor) => ({
@@ -68,7 +62,6 @@ const getMovieTrailer = async (req, res) => {
           : null,
       }));
     
-    //Final response
     res.json({
       trailer: trailerUrl,
       details,
@@ -85,12 +78,10 @@ const getRecommendation = async (req, res) => {
   const { movieId } = req.params;
 
   try {
-    // 🔹 Fetch similar/recommended movies from TMDB
     const recommendation = await axios.get(`${BASE_URL}/movie/${movieId}/similar`, {
       params: { api_key: API_KEY, language: "en-US", page: 1 },
     });
 
-    // 🔹 Map essential movie info
     const recommendation_movies = recommendation.data.results.map((m) => ({
       id: m.id,
       title: m.title,
@@ -99,9 +90,7 @@ const getRecommendation = async (req, res) => {
         : "https://via.placeholder.com/342x513?text=No+Image",
     }));
 
-    // ✅ Send data back to frontend
     res.json(recommendation_movies);
-
   } catch (err) {
     console.error(`❌ Error fetching recommendation for movie ${movieId}:`, err.message);
     res.status(500).json({ error: "Failed to fetch recommendation movie data" });
@@ -109,7 +98,6 @@ const getRecommendation = async (req, res) => {
 };
 
 
-// ✅ Fetch carousel movies
 const carousel = async (req, res) => {
   try {
     const response = await axios.get(`${BASE_URL}/movie/popular`, {
@@ -130,7 +118,6 @@ const carousel = async (req, res) => {
 };
 
 
-// ✅ Fetch now playing movies
 const getNowPlayingMovies = async (req, res) => {
   try {
     const response = await axios.get(`${BASE_URL}/movie/now_playing`, {
@@ -156,7 +143,6 @@ const getNowPlayingMovies = async (req, res) => {
   }
 };
 
-// ✅ Fetch popular movies
 const getPopularMovies = async (req, res) => {
   try {
     const response = await axios.get(`${BASE_URL}/movie/popular`, {
@@ -168,13 +154,13 @@ const getPopularMovies = async (req, res) => {
       title: m.title,
       poster: `https://image.tmdb.org/t/p/w342${m.poster_path}`,
     }));
+
     res.json(posters);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// ✅ Fetch top rated movies
 const getTopRatedMovies = async (req, res) => {
   try {
     const response = await axios.get(`${BASE_URL}/movie/top_rated`, {
@@ -186,13 +172,13 @@ const getTopRatedMovies = async (req, res) => {
       title: m.title,
       poster: `https://image.tmdb.org/t/p/w342${m.poster_path}`,
     }));
+
     res.json(posters);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// ✅ Fetch upcoming movies
 const getUpCommingMovies = async (req, res) => {
   try {
     const response = await axios.get(`${BASE_URL}/movie/upcoming`, {
@@ -204,16 +190,15 @@ const getUpCommingMovies = async (req, res) => {
       title: m.title,
       poster: `https://image.tmdb.org/t/p/w342${m.poster_path}`,
     }));
+    
     res.json(posters);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
-// 🟢 Fetch Korean (K-drama) Series Example
 const getAllFullMovie = async (req, res) => {
-const select_query = "SELECT id, title, video_url, poster_url FROM movies";
+  const select_query = "SELECT id, title, video_url, poster_url FROM movies";
   db.query(select_query, (err, result) => {
     if (err) {
       return res.status(500).json({ error: "Movie fetch failed" });
@@ -223,16 +208,12 @@ const select_query = "SELECT id, title, video_url, poster_url FROM movies";
       return res.status(404).json({ error: "No movies found" });
     }
 
-    // SUCCESS RESPONSE
     return res.status(200).json({
       message: "Movies fetched successfully",
       movies: result
     });
   });
 };
-
-
-
 
 
 module.exports = {

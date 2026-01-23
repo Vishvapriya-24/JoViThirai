@@ -1,10 +1,9 @@
-// server.js
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require("cookie-parser");
 
 require('dotenv').config();
-require('./Database'); // just runs the db connection
+require('./Database'); 
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
@@ -28,8 +27,7 @@ app.get('/check-auth', verifyToken, (req, res) => {
     res.json({ loggedIn: true, user: req.user });
 });
 
-
-// Routes
+// Authentication
 app.post('/signup', signup);
 app.post('/signin', signin);
 
@@ -37,7 +35,7 @@ app.post('/logout', (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
         sameSite: "lax",
-        secure: false // HTTPS irundha true
+        secure: false
     });
     res.json({ msg: "Logged out successfully" });
 });
@@ -51,19 +49,16 @@ app.get('/movies/upcoming', getUpCommingMovies)
 app.get('/movies/movieDetails/:movieId', getMovieTrailer);
 app.get('/movies/movieDetails/:movieId/recommendation', getRecommendation);
 app.get('/movies/fullmovie',getAllFullMovie)
+
 //series
-//app.get('/series/:category', getSeries);
 app.get("/series/:region", getSeries);
 app.get("/series/seriesDetails/:seriesId",getSeriesDetails);
 app.get("/series/seriesDetails/:seriesId/recommendation",getSeriesRecommendation);
 
 // Profile routes
-app.post('/profile/create', createProfile);   // create new profile
-app.put('/profile/:user_id',upload.single("profile_pic"), updateProfile);   // update existing profile (partial allowed)
-app.get('/profile/:user_id', getProfile);     // fetch profile by user_id
-
-
-
+app.post('/profile/create', createProfile);   
+app.put('/profile/:user_id',upload.single("profile_pic"), updateProfile);  
+app.get('/profile/:user_id', getProfile);     
 
 app.listen(process.env.PORT, () => {
     console.log("Flimpire API is running");

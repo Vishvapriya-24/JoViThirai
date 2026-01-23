@@ -6,24 +6,20 @@ const app = express();
 const API_KEY = "57a64673396bec00e661410df51019d4";
 const BASE_URL = "https://api.themoviedb.org/3";
 
-// ✅ Create HTTPS agent to ignore certificate issues safely
 const agent = new https.Agent({
   keepAlive: true,
-  rejectUnauthorized: false, // ignore SSL verification issues
+  rejectUnauthorized: false, 
 });
 axios.defaults.httpsAgent = agent;
 
 const getSeries = async (req, res) => {
   const { region } = req.params;
-
-  // 🌍 Language mapping
   const languageMap = {
     korean: "ko",
     chinese: "zh",
-    indian: "hi",     // you can later extend to ta, te
+    indian: "hi",     
     american: "en",
   };
-
   const language = languageMap[region];
 
   if (!language) {
@@ -68,7 +64,6 @@ const getSeriesDetails = async (req,res) => {
     const { seriesId } = req.params;
 
   try {
-    // 🔁 Two API calls in parallel
     const [videoRes, detailsRes, casting] = await Promise.all([
       axios.get(`${BASE_URL}/tv/${seriesId}/videos`, {
         params: { api_key: API_KEY },
@@ -81,7 +76,6 @@ const getSeriesDetails = async (req,res) => {
       })
     ]);
 
-    // ===== 🎬 Extract trailer =====
     let trailer = videoRes.data.results.find(
       (v) =>
         v.site === "YouTube" &&
@@ -95,7 +89,6 @@ const getSeriesDetails = async (req,res) => {
       );
     }
 
-    // ===== 📺 Extract series details =====
     const series = detailsRes.data;
 
     const details = {
@@ -119,7 +112,6 @@ const getSeriesDetails = async (req,res) => {
       ? `https://www.youtube.com/watch?v=${trailer.key}`
       : null;
 
-    // ===== Extract cast details =====
     const cast = casting.data.cast
       .slice(0,10)
       .map((actor) => ({
@@ -131,7 +123,6 @@ const getSeriesDetails = async (req,res) => {
           : null,
       }));
 
-    // ✅ Final response (same pattern as movie)
     res.json({
       trailer: trailerUrl,
       details,

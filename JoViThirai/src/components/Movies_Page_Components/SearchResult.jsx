@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation,useNavigate } from "react-router-dom";
 import axios from "axios";
-import style from "../../style/SearchResult.module.css"; // ✅ Import CSS module
+import style from "../../style/SearchResult.module.css"; 
 
 const API_KEY = "57a64673396bec00e661410df51019d4"; // your TMDB key
 
@@ -45,10 +45,10 @@ function SearchResult() {
     fetchAll();
   }, [query]);
 
-  // ✅ Only artists with images (no empty box)
+  // Only artists with images (no empty box)
   const filteredArtists = artists.filter((person) => person.profile_path);
 
-  // ✅ Check for "no results" (artists + movies + tv)
+  //  Check for "no results" (artists + movies + tv)
   const noResults =
     !loading &&
     movies.length === 0 &&

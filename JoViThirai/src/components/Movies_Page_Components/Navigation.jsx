@@ -89,13 +89,13 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
         <div className="d-flex align-items-center d-lg-none">
           <Navbar.Toggle aria-controls="offcanvasNavbar" className="me-2" onClick={handleShow} />
           <Navbar.Brand as={NavLink} to="/" className="fw-bold text-light mb-0">
-            Flimpire
+            JoViThirai
           </Navbar.Brand>
         </div>
 
         {/* Large screen brand */}
-        <Navbar.Brand as={NavLink} to="/" className="fw-bold text-light d-none d-lg-block">
-          Flimpire
+        <Navbar.Brand as={NavLink} to="/" className="fw-bold text-warning d-none d-lg-block">
+          JoViThirai
         </Navbar.Brand>
 
         {/* Large screen Nav Links */}
@@ -171,10 +171,6 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
             }}
           >
             <i className="bi bi-search text-light" style={{ fontSize: "1.2rem" }}></i>
-          </Nav.Link>
-
-          <Nav.Link href="#wishlist" className="me-3">
-            <i className="bi bi-bell text-light" style={{ fontSize: "1.2rem" }}></i>
           </Nav.Link>
 
           <NavDropdown

@@ -1,11 +1,4 @@
 
-@import "tailwindcss";
-
-@theme {
-  --color-background: #000000;
-  --color-text: #ff0000;
-}
-
 
 *{
   margin:0px;
@@ -22,7 +15,7 @@ body{
 body {
   font-family: "Roboto", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 700; /* Bold */
+  font-weight: 700; 
   font-style: normal;
   font-variation-settings: "wdth" 100;
 }

@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { BiLogoImdb } from "react-icons/bi";
-import SeriesRow from "./Series_Row"; // optional (recommendations)
+import SeriesRow from "./Series_Row"; 
 
 const fetchSeriesDetails = async (seriesId) => {
   const res = await axios.get(
@@ -17,11 +17,9 @@ function SeriesDetails() {
   const [trailerUrl, setTrailerUrl] = useState(null);
   const [showtrailer,setshowtrailer] = useState(false);
 
-  // 🚫 Safety check
   if (!series)
     return <h2 style={styles.centerText}>Series not found</h2>;
 
-  // 🎬 Fetch series details + trailer
   const { data, isLoading, isError } = useQuery({
     queryKey: ["seriesDetails", series.id],
     queryFn: () => fetchSeriesDetails(series.id),
@@ -49,9 +47,7 @@ function SeriesDetails() {
 
   return (
     <div style={styles.page}>
-      {/* ===== HERO SECTION ===== */}
       <section style={styles.hero}>
-        {/* --- Left Info Section --- */}
         <div style={styles.info}>
           <h1 style={styles.title}>{sd.title}</h1>
 
@@ -125,7 +121,6 @@ function SeriesDetails() {
           </div>
         </div>
 
-        {/* --- Right Image Section --- */}
         <div style={styles.imageContainer}>
           <div style={styles.fadeOverlay}></div>
           <img
@@ -136,7 +131,6 @@ function SeriesDetails() {
         </div>
       </section>
 
-      {/* ===== SHADOW TRANSITION ===== */}
       <div style={styles.shadow}></div>
 
       <div style={styles.about}> 
@@ -144,7 +138,6 @@ function SeriesDetails() {
         <p style = {styles.overview}>{sd.overview}</p>
       </div>
 
-      {/* ===== CAST SECTION ===== */}
       <section style={styles.castSection}>
         <h2 style={styles.sectionTitle}>Cast</h2>
 
@@ -174,13 +167,10 @@ function SeriesDetails() {
       </section>
 
       <SeriesRow title="Recommendation" category={`seriesDetails/${series.id}/recommendation`}></SeriesRow>
-      {/* Optional Recommendations */}
-      {/* <SeriesRow title="Similar Series" category={`similar/${series.id}`} /> */}
     </div>
   );
 }
 
-/* 🎨 CSS-in-JS styles */
 const styles = {
   page: {
     backgroundColor: "black",
@@ -197,7 +187,7 @@ const styles = {
   },
 
   info: {
-    flex: "0 0 28%", // 👈 fixed width: 40%
+    flex: "0 0 28%", 
     padding: "4% 4%",
     display: "flex",
     flexDirection: "column",
@@ -300,7 +290,7 @@ const styles = {
   },
 
   imageContainer: {
-    flex: "0 0 72%", // 👈 fixed width: 60%
+    flex: "0 0 72%", 
     position: "relative",
     height: "100%",
     overflow: "hidden",

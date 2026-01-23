@@ -3,30 +3,28 @@ import Navigation from "./Navigation";
 import { useNavigate } from "react-router-dom";
 import Plans from "./Plans";
 import { Outlet } from "react-router-dom";
-import FloatingNav from "./FloatingNav";
 
 function Welcome() {
   const [showSubscribe, setShowSubscribe] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  // 🔒 Disable background scroll when modal open
 
   useEffect(() => {
     fetch("http://localhost:8000/check-auth", {
-      credentials: "include" // 🔥 cookie must go
+      credentials: "include"
     })
       .then(res => {
         if (res.status === 200) {
           setLoading(false);
         } else {
-          navigate("/"); // 👈 signin page
+          navigate("/"); 
         }
       })
       .catch(() => navigate("/"));
   }, []);
 
-  // ⛔ while checking token
+  // while checking token
   useEffect(() => {
     document.body.style.overflow = showSubscribe ? "hidden" : "auto";
     return () => {
@@ -34,7 +32,7 @@ function Welcome() {
     };
   }, [showSubscribe]);
 
-  // ⌨️ ESC key closes modal
+  //  ESC key closes modal
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") {
@@ -47,22 +45,22 @@ function Welcome() {
 
   const handleSelectPlan = (planName) => {
     console.log("Plan selected:", planName);
-    // 🔗 payment / API logic later
+    // payment / API logic later
     setShowSubscribe(false);
   };
 
   return (
     <div>
-      {/* 🔹 Top Navigation */}
+      {/*  Top Navigation */}
       <Navigation
         setShowSubscribe={setShowSubscribe}
         setShowSettings={setShowSettings}
       />
 
-      {/* 🔹 Page Content */}
+      {/*  Page Content */}
       <Outlet />
 
-      {/* 🔥 SUBSCRIBE MODAL */}
+      {/*  SUBSCRIBE MODAL */}
       {showSubscribe && (
         <div
           onClick={() => setShowSubscribe(false)}
@@ -76,7 +74,7 @@ function Welcome() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 99999, // 🔥 VERY IMPORTANT
+            zIndex: 99999, 
           }}
         >
           <div

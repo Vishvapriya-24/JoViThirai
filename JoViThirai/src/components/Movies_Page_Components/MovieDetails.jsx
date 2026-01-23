@@ -15,18 +15,15 @@ function MovieDetails() {
   const [trailerUrl, setTrailerUrl] = useState(null);
   const [ShowTrailer, setShowTrailer] = useState(false);
 
-  // 🚫 Safety check if no movie data+
   if (!movie)
     return <h2 style={styles.centerText}>Movie not found</h2>;
 
-  // 🎬 Fetch trailer and details
   const { data, isLoading, isError } = useQuery({
     queryKey: ["movieDetails", movie.id],
     queryFn: () => fetchMovieDetails(movie.id),
     enabled: !!movie,
   });
 
-  // 🎞️ Update trailer URL
   useEffect(() => {
     if (data?.trailer) setTrailerUrl(data.trailer);
   }, [data]);
@@ -168,7 +165,6 @@ function MovieDetails() {
   );
 }
 
-/* 🎨 CSS-in-JS styles */
 const styles = {
   page: {
     backgroundColor: "black",
@@ -185,7 +181,7 @@ const styles = {
   },
 
   info: {
-    flex: "0 0 28%", // 👈 fixed width: 40%
+    flex: "0 0 28%", 
     padding: "4% 4%",
     display: "flex",
     flexDirection: "column",
@@ -289,7 +285,7 @@ const styles = {
 
 
   imageContainer: {
-    flex: "0 0 72%", // 👈 fixed width: 60%
+    flex: "0 0 72%", 
     position: "relative",
     height: "100%",
     overflow: "hidden",

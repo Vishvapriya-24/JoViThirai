@@ -1,6 +1,3 @@
-// Plans.jsx
-import React from "react";
-
 const plans = [
   {
     name: "Basic",
@@ -83,7 +80,6 @@ const styles = {
   popularCard: {
     border: "2px solid #007bff",
     transform: "scale(1.05)",
-    // maybe background slightly bluish
     backgroundColor: "#f0f8ff",
   },
   price: {

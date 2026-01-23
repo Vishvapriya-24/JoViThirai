@@ -2,7 +2,6 @@ body {
   background-color: #0f0f0f;
 }
 
-/* Page */
 .movie-page {
   padding: 20px;
 }
@@ -12,14 +11,14 @@ body {
   margin-bottom: 20px;
 }
 
-/* Grid */
+
 .movie-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
 }
 
-/* Card */
+
 .movie-card {
   position: relative;
   border-radius: 12px;
@@ -38,7 +37,7 @@ body {
   transform: scale(1.08);
 }
 
-/* Overlay */
+
 .overlay {
   position: absolute;
   inset: 0;
@@ -68,7 +67,7 @@ body {
   text-align: center;
 }
 
-/* Player */
+
 .player-container {
   background: black;
   min-height: 100vh;

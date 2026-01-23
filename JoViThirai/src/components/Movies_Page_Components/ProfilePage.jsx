@@ -58,8 +58,8 @@ const token =
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileFile(file); // store real file for backend
-      const imageUrl = URL.createObjectURL(file); // temporary preview
+      setProfileFile(file); 
+      const imageUrl = URL.createObjectURL(file); 
       setProfile((prev) => ({ ...prev, profile_pic: imageUrl }));
     }
   };
@@ -76,10 +76,10 @@ const token =
         formData.append("timezone", profile.timezone);
 
         if (profileFile) {
-          formData.append("profile_pic", profileFile); // append real file
+          formData.append("profile_pic", profileFile); 
         }
 
-        await updateProfile(userId, formData); // backend should accept FormData
+        await updateProfile(userId, formData); 
 
         alert("Profile updated successfully!");
       } catch (err) {

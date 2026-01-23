@@ -1,4 +1,3 @@
-import React from 'react'
 import img from '../../assets/finalbackground.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
   const [lang, setLang] = useState('English');
   const navigate = useNavigate();
+
   const styles = {
     outer: {
       height: '100vh',
@@ -52,9 +52,9 @@ const HomePage = () => {
       });
 
       if (res.ok) {
-        navigate("/home/front"); // ✅ already logged in
+        navigate("/home/front"); 
       } else {
-        navigate("/login"); // ❌ not logged in
+        navigate("/login"); 
       }
     } catch (err) {
       navigate("/login");
@@ -62,7 +62,7 @@ const HomePage = () => {
   };
 
 
-  
+
 
   return (
 
@@ -76,7 +76,7 @@ const HomePage = () => {
           transform: 'perspective(500px) rotateX(5deg)',
         }}>JoViThirai</h1>
         <div style={styles.nav}>
-          <select value={lang} onChange={(e)=>{setLang(e.target.value)}}>
+          <select value={lang} onChange={(e) => { setLang(e.target.value) }}>
             <option style={{ color: 'black' }}>English</option>
             <option style={{ color: 'black' }}>Tamil</option>
           </select>
@@ -93,11 +93,8 @@ const HomePage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <p style={{ fontSize: '1rem', marginBottom: '10px' }}>
             Ready to watch? Enter your email to explore unlimited joy.
-          </p>            <div style={styles.emailbox}>
-            {/*<div style={styles.inputbox}>
-              <label style={{ fontSize: '0.8rem', color: '#ccc', marginBottom: '2px' }}>Email address</label>
-              <input type='text' style={{ border: 'none', outline: 'none', width: '300px' }} />
-            </div>*/}
+          </p>
+          <div style={styles.emailbox}>
             <button onClick={checkAndNavigate} style={{ backgroundColor: 'red', padding: '5px 15px', borderRadius: '2px' }}>Get Started {'>'}</button>
           </div>
         </div>

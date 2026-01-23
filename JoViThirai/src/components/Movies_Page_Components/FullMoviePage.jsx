@@ -26,14 +26,14 @@ function FullMoviePage() {
         <h3 className="movie-title">{selectedMovie.title}</h3>
 
         <video
-  controls
-  autoPlay
-  preload="metadata"
-  playsInline
-  className="video-player"
->
-  <source src={selectedMovie.video_url} type="video/mp4" />
-</video>
+          controls
+          autoPlay
+          preload="metadata"
+          playsInline
+          className="video-player"
+        >
+          <source src={selectedMovie.video_url} type="video/mp4" />
+        </video>
 
       </div>
     );

@@ -22,7 +22,6 @@
   position: relative;
 }
 
-/* LEFT CONTENT */
 .taglineBox {
   max-width: 520px;
   color: white;
@@ -48,7 +47,6 @@
   line-height: 1.6;
 }
 
-/* Decorative line */
 .line {
   width: 70px;
   height: 3px;
@@ -56,6 +54,5 @@
   margin-top: 22px;
 }
 
-/* RIGHT LOGIN CARD */
 
 

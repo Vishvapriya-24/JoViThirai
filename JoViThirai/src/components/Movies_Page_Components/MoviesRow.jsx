@@ -13,7 +13,7 @@ const fetchMovies = async (category) => {
 const MoviesRow = ({ title, category }) => {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
-  const [selectedTrailer, setSelectedTrailer] = useState(null); // ✅ new state
+  const [selectedTrailer, setSelectedTrailer] = useState(null);
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["Movies", category],
     queryFn: () => fetchMovies(category),
@@ -93,7 +93,7 @@ const MoviesRow = ({ title, category }) => {
     leftArrow: { left: "20px" },
     rightArrow: { right: "20px" },
 
-    // 🎥 trailer styles
+    //  trailer styles
     trailerContainer: {
       display: "flex",
       flexDirection: "column",
@@ -166,7 +166,7 @@ const MoviesRow = ({ title, category }) => {
         </button>
       </div>
 
-      {/* 🎥 Trailer Player */}
+      {/* Trailer Player */}
       {selectedTrailer && (
         <div style={styles.trailerContainer}>
           <iframe
