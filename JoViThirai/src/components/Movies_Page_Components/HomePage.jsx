@@ -2,9 +2,10 @@ import React from 'react'
 import img from '../../assets/finalbackground.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 const HomePage = () => {
   const [lang, setLang] = useState('English');
-  const navvigate = useNavigate();
+  const navigate = useNavigate();
   const styles = {
     outer: {
       height: '100vh',
@@ -44,13 +45,22 @@ const HomePage = () => {
     }
   }
 
-  const handleSignIn = () =>{
-      navvigate('/login');
-  }
+  const checkAndNavigate = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/check-auth", {
+        credentials: "include",
+      });
 
-  const handleStart = ()=>{
-    navvigate('/login');
-  }
+      if (res.ok) {
+        navigate("/home/front"); // ✅ already logged in
+      } else {
+        navigate("/login"); // ❌ not logged in
+      }
+    } catch (err) {
+      navigate("/login");
+    }
+  };
+
 
   
 
@@ -70,7 +80,7 @@ const HomePage = () => {
             <option style={{ color: 'black' }}>English</option>
             <option style={{ color: 'black' }}>Tamil</option>
           </select>
-          <button onClick = {handleSignIn} style={{ marginTop: '15px', height: '30px', backgroundColor: 'red', padding: '0px 25px', borderRadius: '5px' }}>Sign In</button>
+          <button onClick={checkAndNavigate} style={{ marginTop: '15px', height: '30px', backgroundColor: 'red', padding: '0px 25px', borderRadius: '5px' }}>Sign In</button>
         </div>
       </div>
 
@@ -88,7 +98,7 @@ const HomePage = () => {
               <label style={{ fontSize: '0.8rem', color: '#ccc', marginBottom: '2px' }}>Email address</label>
               <input type='text' style={{ border: 'none', outline: 'none', width: '300px' }} />
             </div>*/}
-            <button onClick={handleStart} style={{ backgroundColor: 'red', padding: '5px 15px', borderRadius: '2px' }}>Get Started {'>'}</button>
+            <button onClick={checkAndNavigate} style={{ backgroundColor: 'red', padding: '5px 15px', borderRadius: '2px' }}>Get Started {'>'}</button>
           </div>
         </div>
       </div>

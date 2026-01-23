@@ -4,7 +4,6 @@ import { jwtDecode } from "jwt-decode";
 import { getProfile, updateProfile } from "../../api/ProfileApi";
 import Cookies from "js-cookie";
 
-
 function ProfilePage() {
   const [profile, setProfile] = useState({
     full_name: "",
