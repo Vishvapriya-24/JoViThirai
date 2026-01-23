@@ -40,6 +40,7 @@ function Log_Page() {
                 email,
                 password
             }, { withCredentials: true })
+            
 
             setMessage(res.data.msg);
             navigate('/home/front');

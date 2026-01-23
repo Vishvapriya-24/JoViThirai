@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FaEnvelope, FaEdit, FaSave, FaCamera } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import { getProfile, updateProfile } from "../../api/ProfileApi";
+import Cookies from "js-cookie";
 
 
 function ProfilePage() {
@@ -18,8 +19,16 @@ function ProfilePage() {
 
   const [profileFile, setProfileFile] = useState(null);
 
-  const token = localStorage.getItem("token");
-  if (!token) return;
+const token =
+  localStorage.getItem("token") ||
+  Cookies.get("token"); 
+  console.log(token)
+   if (!token) {
+  return <h2 style={{ color: "white", textAlign: "center" }}>
+    Please login to view profile
+  </h2>;
+}
+
 
   const decoded = jwtDecode(token);
   const userId = decoded.id;
