@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Navigation from "./Navigation";
+import { useNavigate } from "react-router-dom";
 import Plans from "./Plans";
 import { Outlet } from "react-router-dom";
 import FloatingNav from "./FloatingNav";
@@ -7,8 +8,25 @@ import FloatingNav from "./FloatingNav";
 function Welcome() {
   const [showSubscribe, setShowSubscribe] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   // 🔒 Disable background scroll when modal open
+
+  useEffect(() => {
+    fetch("http://localhost:8000/check-auth", {
+      credentials: "include" // 🔥 cookie must go
+    })
+      .then(res => {
+        if (res.status === 200) {
+          setLoading(false);
+        } else {
+          navigate("/"); // 👈 signin page
+        }
+      })
+      .catch(() => navigate("/"));
+  }, []);
+
+  // ⛔ while checking token
   useEffect(() => {
     document.body.style.overflow = showSubscribe ? "hidden" : "auto";
     return () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -57,6 +57,19 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
       setShowSearch(false);
     }
   };
+  const handleLogout = async () => {
+  try {
+    await fetch("http://localhost:8000/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+
+    navigate("/"); // 👈 signin / front page
+  } catch (err) {
+    console.error("Logout failed", err);
+  }
+};
+
 
 
 
@@ -178,15 +191,18 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
               Settings
             </NavDropdown.Item> */}
             <NavDropdown.Divider />
-            <NavDropdown.Item href="#logout">Logout</NavDropdown.Item>
-          </NavDropdown>
+            <NavDropdown.Item onClick={handleLogout}>
+              Logout
+            </NavDropdown.Item>          </NavDropdown>
 
           <Button
             variant="warning"
             className="fw-semibold text-dark"
-            
-            onClick={() => {console.log("SUBSCRIBE BUTTON CLICKED");
-              setShowSubscribe(true)}}
+
+            onClick={() => {
+              console.log("SUBSCRIBE BUTTON CLICKED");
+              setShowSubscribe(true)
+            }}
           >
             Subscribe
           </Button>

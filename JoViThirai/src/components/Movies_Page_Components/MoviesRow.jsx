@@ -21,7 +21,7 @@ const MoviesRow = ({ title, category }) => {
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
-      const scrollAmount = 6 * 220;
+      const scrollAmount = 1 * 220;
       scrollRef.current.scrollBy({
         left: direction === "right" ? scrollAmount : -scrollAmount,
         behavior: "smooth",
@@ -56,7 +56,7 @@ const MoviesRow = ({ title, category }) => {
     section: {
       marginBottom: "40px",
       position: "relative",
-      padding: "0 40px",
+      padding: "0 0px",
     },
     title: {
       fontSize: "22px",

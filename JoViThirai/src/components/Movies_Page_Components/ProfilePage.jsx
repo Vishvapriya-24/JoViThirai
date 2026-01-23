@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaEnvelope, FaEdit, FaSave, FaCamera } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import { getProfile, updateProfile } from "../../api/ProfileApi";
-
+import Cookies from "js-cookie";
 
 function ProfilePage() {
   const [profile, setProfile] = useState({
@@ -18,7 +18,7 @@ function ProfilePage() {
 
   const [profileFile, setProfileFile] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") || Cookies.get("token");
   if (!token) return;
 
   const decoded = jwtDecode(token);

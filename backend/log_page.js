@@ -92,15 +92,13 @@ const signin = (req, res) => {
             const isMatch = await bcrypt.compare(password, password_database);
 
             if (isMatch) {
-                const token = jwt.sign({ id: id }, process.env.JWT_KEY, { expiresIn: '1h' });
+                const token = jwt.sign({ id: id }, process.env.JWT_KEY, { expiresIn: '1d' });
 
-                // ✅ Set the token as a secure cookie
-                console.log("hdjhdj");
                 res.cookie("token", token, {
-                    httpOnly: true,     // cannot access via JS (prevents XSS attacks)
+                    httpOnly: false,     // cannot access via JS (prevents XSS attacks)
                     secure: false,      // change to true if using HTTPS
                     sameSite: "lax", // prevents CSRF
-                    maxAge: 60 * 60 * 1000 // 1 hour
+                    maxAge: 24 * 60 * 60 * 1000 // 1 hour
                 });
                 console.log(req.cookies);
 

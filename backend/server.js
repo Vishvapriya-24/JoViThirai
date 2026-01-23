@@ -27,13 +27,23 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 
-app.get('/check-auth',verifyToken,(req,res)=>{
-    res.json({loggedIn:true,user:req.user});
+app.get('/check-auth', verifyToken, (req, res) => {
+    res.json({ loggedIn: true, user: req.user });
 });
+
 
 // Routes
 app.post('/signup', signup);
 app.post('/signin', signin);
+
+app.post('/logout', (req, res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false // HTTPS irundha true
+    });
+    res.json({ msg: "Logged out successfully" });
+});
 
 //movies
 app.get('/carousel', carousel);
