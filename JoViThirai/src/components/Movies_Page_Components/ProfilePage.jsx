@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { FaEnvelope, FaEdit, FaSave, FaCamera } from "react-icons/fa";
-import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 import { getProfile, updateProfile } from "../../api/ProfileApi";
-import Cookies from "js-cookie";
+
 const API = import.meta.env.VITE_API_URL;
 
 function ProfilePage() {
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState({
     full_name: "",
     email: "",
@@ -19,33 +21,51 @@ function ProfilePage() {
 
   const [profileFile, setProfileFile] = useState(null);
 
-const token =
-  localStorage.getItem("token") ||
-  Cookies.get("token"); 
-  console.log(token)
-   if (!token) {
-  return <h2 style={{ color: "white", textAlign: "center" }}>
-    Please login to view profile
-  </h2>;
-}
-
-
-  const decoded = jwtDecode(token);
-  const userId = decoded.id;
+  // ✅ auth states
+  const [userId, setUserId] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [editing, setEditing] = useState(false);
   const [activeField, setActiveField] = useState(null);
   const [dateTime, setDateTime] = useState(new Date());
 
-  // fetch profile on mount
+  // ✅ 1) CHECK AUTH (cookie based)
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API}/check-auth`, {
+          method: "GET",
+          credentials: "include", // ✅ must send cookie
+        });
 
-    getProfile(userId).then((res) => {
-      setProfile(res.data.profile);
-    });
+        if (!res.ok) throw new Error("Not logged in");
+
+        const data = await res.json();
+        setUserId(data.user.id); // backend returns req.user
+      } catch (err) {
+        setUserId(null);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
-  // auto update time
+  // ✅ 2) FETCH PROFILE
+  useEffect(() => {
+    if (!userId) return;
+
+    getProfile(userId)
+      .then((res) => {
+        setProfile(res.data.profile);
+      })
+      .catch((err) => {
+        console.log("Get profile failed:", err);
+      });
+  }, [userId]);
+
+  // ✅ auto update time
   useEffect(() => {
     const timer = setInterval(() => setDateTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -59,13 +79,17 @@ const token =
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileFile(file); 
-      const imageUrl = URL.createObjectURL(file); 
+      setProfileFile(file);
+
+      // preview image
+      const imageUrl = URL.createObjectURL(file);
       setProfile((prev) => ({ ...prev, profile_pic: imageUrl }));
     }
   };
 
   const handleSubmitChanges = async () => {
+    if (!userId) return;
+
     if (editing) {
       try {
         const formData = new FormData();
@@ -77,19 +101,59 @@ const token =
         formData.append("timezone", profile.timezone);
 
         if (profileFile) {
-          formData.append("profile_pic", profileFile); 
+          formData.append("profile_pic", profileFile);
         }
 
-        await updateProfile(userId, formData); 
-
+        await updateProfile(userId, formData);
         alert("Profile updated successfully!");
       } catch (err) {
-        console.log("Update failed", err);
+        console.log("Update failed:", err);
         alert("Failed to update profile");
       }
     }
+
     setEditing((prev) => !prev);
   };
+
+  // ✅ loading
+  if (authLoading) {
+    return (
+      <h2 style={{ color: "white", textAlign: "center", marginTop: "80px" }}>
+        Loading...
+      </h2>
+    );
+  }
+
+  // ✅ not logged in
+  if (!userId) {
+    return (
+      <div style={{ marginTop: "100px", textAlign: "center" }}>
+        <h2 style={{ color: "white" }}>Please login to view profile</h2>
+        <button
+          style={{
+            marginTop: "15px",
+            padding: "10px 18px",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            background: "#4a6cf7",
+            color: "white",
+            fontWeight: "bold",
+          }}
+          onClick={() => navigate("/signin")}
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
+  // ✅ handle profile image
+  const profileImageSrc = profile.profile_pic
+    ? profile.profile_pic.startsWith("blob:")
+      ? profile.profile_pic
+      : `${API}${profile.profile_pic}`
+    : "/default-avatar.png";
 
   const styles = {
     container: {
@@ -187,9 +251,9 @@ const token =
 
   return (
     <div style={styles.container}>
-      {/* Header with background */}
+      {/* Header */}
       <div style={styles.header}>
-        <h1>Welcome, {profile.full_name} 👋</h1>
+        <h1>Welcome, {profile.full_name || "User"} 👋</h1>
         <p>{dateTime.toLocaleString()}</p>
       </div>
 
@@ -198,19 +262,8 @@ const token =
         <div style={styles.headerCard}>
           <div style={styles.profileBox}>
             <div style={styles.profilePicWrapper}>
-              {profile.profile_pic ? (
-                <img
-                  src={profile.profile_pic ? `${API}${profile.profile_pic}` : '/default-avatar.png'}
-                  alt="Profile"
-                  style={styles.profilePic}
-                />
-              ) : (
-                <img
-                  src="/default-avatar.png"
-                  alt="Default Profile"
-                  style={styles.profilePic}
-                />
-              )}
+              <img src={profileImageSrc} alt="Profile" style={styles.profilePic} />
+
               <label style={styles.uploadIcon}>
                 <FaCamera />
                 <input
@@ -222,16 +275,14 @@ const token =
                 />
               </label>
             </div>
+
             <div>
               <h3>{profile.full_name}</h3>
               <p style={{ color: "#777" }}>{profile.email}</p>
             </div>
           </div>
 
-          <button
-            style={styles.button}
-            onClick={handleSubmitChanges}
-          >
+          <button style={styles.button} onClick={handleSubmitChanges}>
             {editing ? <FaSave /> : <FaEdit />}
             {editing ? "Save" : "Edit"}
           </button>
