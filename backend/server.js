@@ -23,6 +23,11 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 
+app.get("/test-db", async (req, res) => {
+  const [rows] = await db.query("SHOW TABLES");
+  res.json(rows);
+});
+
 app.get('/check-auth', verifyToken, (req, res) => {
     res.json({ loggedIn: true, user: req.user });
 });
