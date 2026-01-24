@@ -3,6 +3,7 @@ import Navigation from "./Navigation";
 import { useNavigate } from "react-router-dom";
 import Plans from "./Plans";
 import { Outlet } from "react-router-dom";
+const API = import.meta.env.VITE_API_URL;
 
 function Welcome() {
   const [showSubscribe, setShowSubscribe] = useState(false);
@@ -11,7 +12,7 @@ function Welcome() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/check-auth", {
+    fetch(`${API}/check-auth`, {
       credentials: "include"
     })
       .then(res => {

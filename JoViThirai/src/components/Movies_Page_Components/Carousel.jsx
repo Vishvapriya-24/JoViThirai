@@ -4,10 +4,11 @@ import BootCarousel from "react-bootstrap/Carousel";
 import { MyContext } from "../../App";
 import {useQuery}  from '@tanstack/react-query';
 import CarouselSkeleton from "./CarouselSkeleton";
-
+const API = import.meta.env.VITE_API_URL;
 
 const FetchCarouselData = async() =>{
-  const res = await axios.get("http://localhost:8000/carousel");
+  console.log(API)
+  const res = await axios.get(`${API}/carousel`);
   return res.data;
 }
 

@@ -4,10 +4,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { BiLogoImdb } from "react-icons/bi";
 import SeriesRow from "./Series_Row"; 
+const API = import.meta.env.VITE_API_URL;
 
 const fetchSeriesDetails = async (seriesId) => {
   const res = await axios.get(
-    `http://localhost:8000/series/seriesDetails/${seriesId}`
+    `${API}/series/seriesDetails/${seriesId}`
   );
   return res.data;
 };

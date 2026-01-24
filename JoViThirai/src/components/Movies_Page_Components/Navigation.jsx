@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import "bootstrap-icons/font/bootstrap-icons.css";
+const API = import.meta.env.VITE_API_URL;
 
 function Navigation({ setShowSubscribe, setShowSettings }) {
   const [showSearch, setShowSearch] = useState(false);
@@ -59,7 +60,7 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
   };
   const handleLogout = async () => {
   try {
-    await fetch("http://localhost:8000/logout", {
+    await fetch(`${API}/logout`, {
       method: "POST",
       credentials: "include"
     });
@@ -180,12 +181,6 @@ function Navigation({ setShowSubscribe, setShowSettings }) {
             className="me-3"
           >
             <NavDropdown.Item as={NavLink} to="/home/profile">Profile</NavDropdown.Item>
-            {/* <NavDropdown.Item
-
-              onClick={handleOpenSettings}
-            >
-              Settings
-            </NavDropdown.Item> */}
             <NavDropdown.Divider />
             <NavDropdown.Item onClick={handleLogout}>
               Logout

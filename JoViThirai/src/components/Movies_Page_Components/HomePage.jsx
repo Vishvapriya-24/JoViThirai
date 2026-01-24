@@ -1,6 +1,7 @@
 import img from '../../assets/finalbackground.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API = import.meta.env.VITE_API_URL;
 
 const HomePage = () => {
   const [lang, setLang] = useState('English');
@@ -47,7 +48,7 @@ const HomePage = () => {
 
   const checkAndNavigate = async () => {
     try {
-      const res = await fetch("http://localhost:8000/check-auth", {
+      const res = await fetch(`${API}/check-auth`, {
         credentials: "include",
       });
 

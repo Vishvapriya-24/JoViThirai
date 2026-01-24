@@ -4,9 +4,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { BiLogoImdb } from "react-icons/bi";
 import MoviesRow from "./MoviesRow";
+const API = import.meta.env.VITE_API_URL;
 
 const fetchMovieDetails = async (movieId) => {
-  const res = await axios.get(`http://localhost:8000/movies/movieDetails/${movieId}`);
+  const res = await axios.get(`${API}/movies/movieDetails/${movieId}`);
   return res.data;
 };
 

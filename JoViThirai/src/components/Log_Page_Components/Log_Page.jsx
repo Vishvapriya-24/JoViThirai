@@ -4,6 +4,7 @@ import styles from '../../style/Log_Page.module.css';
 import SignUp from './SignUp';
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+const API = import.meta.env.VITE_API_URL;
 
 function Log_Page() {
     const [signup, setsignup] = useState(false);
@@ -15,7 +16,7 @@ function Log_Page() {
 
     const handleSignupSubmit = async (name, age, email, password) => {
         try {
-            const res = await axios.post("http://localhost:8000/signup", {
+            const res = await axios.post(`${API}/signup`, {
                 name,
                 age,
                 email,
@@ -36,7 +37,7 @@ function Log_Page() {
     const handleSignInSubmit = async (email, password) => {
         try {
 
-            const res = await axios.post("http://localhost:8000/signin", {
+            const res = await axios.post(`${API}/signin`, {
                 email,
                 password
             }, { withCredentials: true })

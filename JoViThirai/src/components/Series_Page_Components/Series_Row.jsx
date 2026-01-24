@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+const API = import.meta.env.VITE_API_URL;
 
 const fetchSeries = async (category) => {
-  const res = await axios.get(`http://localhost:8000/series/${category}`);
+  const res = await axios.get(`${API}/series/${category}`);
   return res.data;
 };
 

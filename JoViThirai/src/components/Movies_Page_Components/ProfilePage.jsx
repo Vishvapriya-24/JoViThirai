@@ -3,6 +3,7 @@ import { FaEnvelope, FaEdit, FaSave, FaCamera } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import { getProfile, updateProfile } from "../../api/ProfileApi";
 import Cookies from "js-cookie";
+const API = import.meta.env.VITE_API_URL;
 
 function ProfilePage() {
   const [profile, setProfile] = useState({
@@ -199,7 +200,7 @@ const token =
             <div style={styles.profilePicWrapper}>
               {profile.profile_pic ? (
                 <img
-                  src={profile.profile_pic ? `http://localhost:8000${profile.profile_pic}` : '/default-avatar.png'}
+                  src={profile.profile_pic ? `${API}${profile.profile_pic}` : '/default-avatar.png'}
                   alt="Profile"
                   style={styles.profilePic}
                 />

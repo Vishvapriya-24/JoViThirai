@@ -3,6 +3,7 @@ import axios from "axios";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { FaPlay } from "react-icons/fa";
 import "./FullMoviePage.css";
+const API = import.meta.env.VITE_API_URL;
 
 function FullMoviePage() {
   const [movies, setMovies] = useState([]);
@@ -10,7 +11,7 @@ function FullMoviePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/movies/fullmovie")
+      .get(`${API}/movies/fullmovie`)
       .then(res => setMovies(res.data.movies))
       .catch(err => console.error(err));
   }, []);

@@ -4,9 +4,10 @@ import axios from "axios";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MovieSkeleton from "./MovieSkeleton";
+const API = import.meta.env.VITE_API_URL;
 
 const fetchMovies = async (category) => {
-  const res = await axios.get(`http://localhost:8000/movies/${category}`);
+  const res = await axios.get(`${API}/movies/${category}`);
   return res.data;
 };
 

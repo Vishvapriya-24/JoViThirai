@@ -1,7 +1,7 @@
 import {useState,useEffect} from 'react'
 import axios from 'axios';
 import { Navigate } from "react-router-dom";
-
+const API = import.meta.env.VITE_API_URL;
 
 function ProtectedRoute({children}){
     const [authChecked,setAuthChecked] = useState(false);
@@ -10,7 +10,7 @@ function ProtectedRoute({children}){
     useEffect(()=>{
         const checkAuth = async()=>{
             try{
-                const res = await axios.get('http://localhost:8000/check-auth',{
+                const res = await axios.get(`${API}/check-auth`,{
                     withCredentials:true,
                 });
                 if(res.data.loggedIn){
