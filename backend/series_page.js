@@ -2,9 +2,10 @@ const express = require('express');
 const axios = require('axios');
 const https = require('https');
 const app = express();
+require('dotenv').config()
 
-const API_KEY = "57a64673396bec00e661410df51019d4";
-const BASE_URL = "https://api.themoviedb.org/3";
+const API_KEY =  process.env.TMDB_API_KEY;
+const BASE_URL = process.env.TMDB_BASE_URL;
 
 const agent = new https.Agent({
   keepAlive: true,
