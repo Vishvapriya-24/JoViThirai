@@ -66,5 +66,5 @@ app.put('/profile/:user_id',upload.single("profile_pic"), updateProfile);
 app.get('/profile/:user_id', getProfile);     
 
 app.listen(process.env.PORT, () => {
-    console.log("Flimpire API is running");
+    console.log("Jovithirai API is running");
 });
